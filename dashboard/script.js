@@ -3,7 +3,6 @@
 'use strict';
 
 $(document).ready(function () {
-console.log('loaded!');
 	var socket = io.connect('http://localhost:3000'); // eslint-disable-line no-undef
 	var lastUpdate = 0;
 
