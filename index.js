@@ -1,15 +1,15 @@
 'use strict';
 
-var http = require('http');
 var app = require('express')();
+var http = require('http').Server(app); // eslint-disable-line import/order, babel/new-cap
 var io = require('socket.io')(http);
 
-http.Server(app); // eslint-disable-line babel/new-cap
+// http.Server(app); // eslint-disable-line babel/new-cap
 
 var players = [];
 
 app.get('/', function (req, res) {
-	res.send(players);
+	res.sendFile(__dirname + '/dashboard/index.html'); // eslint-disable-line no-path-concat
 });
 
 io.on('connection', function (socket) {
