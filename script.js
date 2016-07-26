@@ -1,3 +1,3 @@
 'use strict';
 
-console.console.log('lit');
+console.log('lit');
