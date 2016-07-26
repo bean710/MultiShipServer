@@ -3,6 +3,7 @@
 'use strict';
 
 $(document).ready(function () {
+console.log('loaded!');
 	var socket = io.connect('http://localhost:3000'); // eslint-disable-line no-undef
 	var lastUpdate = 0;
 
@@ -21,12 +22,12 @@ $(document).ready(function () {
 		}
 	});
 
-	function kickPlayer(id) { // eslint-disable-line no-unused-vars
+	window.kickPlayer = function(id) { // eslint-disable-line no-unused-vars
 		console.log('attempting to send kick');
 		socket.emit('kick', id);
 	}
 
-	function emitBrowserness() { // eslint-disable-line no-unused-vars
+	window.emitBrowserness = function() { // eslint-disable-line no-unused-vars
 		socket.emit('imabrowser');
 		console.log('lit');
 	}
