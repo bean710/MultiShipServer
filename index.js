@@ -12,7 +12,13 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/dashboard/index.html'); // eslint-disable-line no-path-concat
 });
 
+app.get('/dashboard/script.js', function (req, res) {
+	res.sendFile(__dirname + '/dashboard/script.js'); // eslint-disable-line no-path-concat
+});
+
 io.on('connection', function (socket) {
+	var browser = false;
+
 	console.log('Player Connected!' + socket.id);
 	socket.emit('socketID', {id: socket.id});
 	socket.emit('getPlayers', players);
@@ -36,12 +42,30 @@ io.on('connection', function (socket) {
 			}
 		}
 	});
+
+	socket.on('imabrowser', function () {
+		console.log('browser detected');
+		for (var i = 0; i < players.length; i++) {
+			if (players[i].id === socket.id) {
+				players.splice(i, 1);
+				browser = true;
+				console.log('Dashboard player kicked');
+			}
+		}
+	});
+
+	socket.on('kick', function (data) {
+		console.log('checking if browser');
+		if (browser) {
+			console.log('attempting to kick player');
+			socket.broadcast('kickplayer', data);
+		}
+	});
 });
 
-var tick = setInterval(function () {
+var tick = setInterval(function () { // eslint-disable-line no-unused-vars
 	io.emit('fullUpdate', players);
 }, 50);
-console.log(tick);
 
 function Player(id, x, y) {
 	this.id = id;
