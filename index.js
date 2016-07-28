@@ -38,7 +38,7 @@ io.on('connection', function (socket) {
 			if (players[i].id === data.id) {
 				players[i].x = data.x;
 				players[i].y = data.y; // socket.broadcast.emit('playerUpdate', data);
-				console.log('Player ' + data.id + ' moved to ' + data.x + ', ' + data.y);
+				// console.log('Player ' + data.id + ' moved to ' + data.x + ', ' + data.y);
 			}
 		}
 	});
