@@ -1,4 +1,4 @@
-/* global $, document*/
+/* global $, document, window*/
 
 'use strict';
 
@@ -21,13 +21,13 @@ $(document).ready(function () {
 		}
 	});
 
-	window.kickPlayer = function(id) { // eslint-disable-line no-unused-vars
+	window.kickPlayer = function (id) { // eslint-disable-line no-unused-vars
 		console.log('attempting to send kick');
 		socket.emit('kick', id);
-	}
+	};
 
-	window.emitBrowserness = function() { // eslint-disable-line no-unused-vars
+	window.emitBrowserness = function () { // eslint-disable-line no-unused-vars
 		socket.emit('imabrowser');
 		console.log('lit');
-	}
+	};
 });
