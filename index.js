@@ -58,7 +58,7 @@ io.on('connection', function (socket) {
 		console.log('checking if browser');
 		if (browser) {
 			console.log('attempting to kick player');
-			socket.broadcast('kickplayer', data.id);
+			socket.broadcast.emit('kickplayer', data.id);
 		}
 	});
 });
