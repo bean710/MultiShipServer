@@ -4,14 +4,14 @@
 
 $(document).ready(function () {
 	var socket = io.connect('http://localhost:3000'); // eslint-disable-line no-undef
-	var lastUpdate = new Date().getTime() - 3000;
+	var lastUpdate = new Date().getTime() - 1000;
 
 	socket.on('connect', function () {
 		socket.emit('imabrowser');
 	});
 
 	socket.on('fullUpdate', function (data) {
-		if (new Date().getTime() - lastUpdate >= 5000) {
+		if (new Date().getTime() - lastUpdate >= 2000) {
 			lastUpdate = new Date().getTime();
 			console.log(data);
 			$('#players').text('');

@@ -17,54 +17,60 @@ app.get('/dashboard/script.js', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-	var browser = false;
+	var clientType;
 
-	console.log('Player Connected!' + socket.id);
-	socket.emit('socketID', {id: socket.id});
-	socket.emit('getPlayers', players);
-	socket.broadcast.emit('newPlayer', {id: socket.id});
-	socket.on('disconnect', function () {
-		console.log('Player Disconnected');
-		socket.broadcast.emit('playerDisconnected', {id: socket.id});
-		for (var i = 0; i < players.length; i++) {
-			if (players[i].id === socket.id) {
-				players.splice(i, 1);
-			}
-		}
-	});
-	players.push(new Player(socket.id, 0, 0));
-	socket.on('update', function (data) {
-		for (var i = 0; i < players.length; i++) {
-			if (players[i].id === data.id) {
-				players[i].x = data.x;
-				players[i].y = data.y; // socket.broadcast.emit('playerUpdate', data);
-				// console.log('Player ' + data.id + ' moved to ' + data.x + ', ' + data.y);
-			}
-		}
-	});
+	console.log('Client Connected!' + socket.id);
 
 	socket.on('imabrowser', function () {
 		console.log('browser detected');
 		for (var i = 0; i < players.length; i++) {
 			if (players[i].id === socket.id) {
 				players.splice(i, 1);
-				browser = true;
+				clientType = 'browser';
 				console.log('Dashboard player kicked');
 			}
 		}
 	});
 
-	socket.on('kick', function (data) {
-		console.log('checking if browser');
-		if (browser) {
+	socket.on('imagame', function () {
+		clientType = 'game';
+	});
+
+	if (clientType === 'game') {
+		socket.emit('socketID', {id: socket.id});
+		socket.emit('getPlayers', players);
+		socket.broadcast.emit('newPlayer', {id: socket.id});
+		socket.on('disconnect', function () {
+			console.log('Player Disconnected');
+			socket.broadcast.emit('playerDisconnected', {id: socket.id});
+			for (var i = 0; i < players.length; i++) {
+				if (players[i].id === socket.id) {
+					players.splice(i, 1);
+				}
+			}
+		});
+		players.push(new Player(socket.id, 0, 0));
+		socket.on('update', function (data) {
+			for (var i = 0; i < players.length; i++) {
+				if (players[i].id === data.id) {
+					players[i].x = data.x;
+					players[i].y = data.y; // socket.broadcast.emit('playerUpdate', data);
+					// console.log('Player ' + data.id + ' moved to ' + data.x + ', ' + data.y);
+				}
+			}
+		});
+	} else if (clientType === 'browser') {
+		socket.on('kick', function (data) {
+			console.log('checking if browser');
 			console.log('attempting to kick player');
 			socket.broadcast.emit('kickplayer', data.id);
-		}
-	});
+		});
+	}
 });
 
 var tick = setInterval(function () { // eslint-disable-line no-unused-vars
 	io.emit('fullUpdate', players);
+	process.stdout.write(players.length + ' players connected\r');
 }, 50);
 
 function Player(id, x, y) {
