@@ -17,26 +17,22 @@ app.get('/dashboard/script.js', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-	var clientType;
-
 	console.log('Client Connected!' + socket.id);
 
 	socket.on('imabrowser', function () {
 		console.log('browser detected');
 		for (var i = 0; i < players.length; i++) {
 			if (players[i].id === socket.id) {
-				players.splice(i, 1);
-				clientType = 'browser';
-				console.log('Dashboard player kicked');
+				socket.on('kick', function (data) {
+					console.log('checking if browser');
+					console.log('attempting to kick player');
+					socket.broadcast.emit('kickplayer', data.id);
+				});
 			}
 		}
 	});
 
 	socket.on('imagame', function () {
-		clientType = 'game';
-	});
-
-	if (clientType === 'game') {
 		socket.emit('socketID', {id: socket.id});
 		socket.emit('getPlayers', players);
 		socket.broadcast.emit('newPlayer', {id: socket.id});
@@ -59,13 +55,7 @@ io.on('connection', function (socket) {
 				}
 			}
 		});
-	} else if (clientType === 'browser') {
-		socket.on('kick', function (data) {
-			console.log('checking if browser');
-			console.log('attempting to kick player');
-			socket.broadcast.emit('kickplayer', data.id);
-		});
-	}
+	});
 });
 
 var tick = setInterval(function () { // eslint-disable-line no-unused-vars
