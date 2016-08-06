@@ -7,6 +7,8 @@ var io = require('socket.io')(http);
 // http.Server(app); // eslint-disable-line babel/new-cap
 
 var players = [];
+var bullets = {};
+var foo;
 
 app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/dashboard/index.html'); // eslint-disable-line no-path-concat
@@ -21,15 +23,11 @@ io.on('connection', function (socket) {
 
 	socket.on('imabrowser', function () {
 		console.log('browser detected');
-		for (var i = 0; i < players.length; i++) {
-			if (players[i].id === socket.id) {
-				socket.on('kick', function (data) {
-					console.log('checking if browser');
-					console.log('attempting to kick player');
-					socket.broadcast.emit('kickplayer', data.id);
-				});
-			}
-		}
+		socket.on('kick', function (data) {
+			console.log('checking if browser');
+			console.log('attempting to kick player');
+			socket.broadcast.emit('kickplayer', data.id);
+		});
 	});
 
 	socket.on('imagame', function () {
@@ -46,6 +44,7 @@ io.on('connection', function (socket) {
 			}
 		});
 		players.push(new Player(socket.id, 0, 0));
+
 		socket.on('update', function (data) {
 			for (var i = 0; i < players.length; i++) {
 				if (players[i].id === data.id) {
@@ -55,11 +54,16 @@ io.on('connection', function (socket) {
 				}
 			}
 		});
+		socket.on('bulletUpdate', function (data) {
+			bullets[socket.id] = data;
+			console.log(data);
+		});
 	});
 });
 
 var tick = setInterval(function () { // eslint-disable-line no-unused-vars
 	io.emit('fullUpdate', players);
+	io.emit('bulletRefresh', bullets);
 	process.stdout.write(players.length + ' players connected\r');
 }, 50);
 
